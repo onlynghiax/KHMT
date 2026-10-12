@@ -32,8 +32,11 @@ def _run_solver_in_process(solver_func, n, timeout, result_queue):
         start = time.perf_counter()
         solution = solver_func(n) if 'timeout' not in solver_func.__code__.co_varnames else solver_func(n, timeout=timeout)
         elapsed = time.perf_counter() - start
-        valid = _validate_solution(solution, n) if solution is not None else False
-        result_queue.put(("ok", elapsed, valid))
+        if solution is None:
+            result_queue.put(("timeout", elapsed, False))
+        else:
+            valid = _validate_solution(solution, n)
+            result_queue.put(("ok", elapsed, valid))
     except Exception as e:
         elapsed = time.perf_counter() - start
         result_queue.put(("error", elapsed, str(e)))
@@ -91,6 +94,8 @@ def run_with_timeout(solver_func, n, timeout):
         status, elapsed, extra = result_queue.get_nowait()
         if status == "ok":
             return elapsed, "OK" if extra else "INVALID", extra
+        elif status == "timeout":
+            return elapsed, "TIMEOUT", False
         else:
             return elapsed, f"ERROR: {extra}", False
     else:
