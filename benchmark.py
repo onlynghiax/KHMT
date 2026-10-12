@@ -149,11 +149,11 @@ def solve_cpsat(n, timeout=300):
 # max_n_recommended is the upper N above which we skip (to avoid wasting time)
 ALL_SOLVERS = [
     ("SAT-Binomial",   solve_sat_binomial,   "SAT",    128),
-    ("SAT-Binary",     solve_sat_binary,     "SAT",    512),
-    ("SAT-Sequential", solve_sat_sequential, "SAT",    128),
+    ("SAT-Binary",     solve_sat_binary,     "SAT",    1024),
+    ("SAT-Sequential", solve_sat_sequential, "SAT",    256),
     ("CPLEX-CP",       solve_cplex_cp,       "Solver", 4096),
-    ("CPLEX-MIP",      solve_cplex_mip,      "Solver", 512),
-    ("Gurobi-MIP",     solve_gurobi_mip,     "Solver", 512),
+    ("CPLEX-MIP",      solve_cplex_mip,      "Solver", 1024),
+    ("Gurobi-MIP",     solve_gurobi_mip,     "Solver", 1024),
     ("CP-SAT",         solve_cpsat,          "Solver", 4096),
 ]
 
@@ -236,7 +236,7 @@ def get_active_solvers(availability):
 # Main benchmark
 # ----------------------------------------------
 
-def run_benchmark(n_values=None, timeout=None, output_dir=None):
+def run_benchmark(n_values=None, timeout=None, output_dir=None, allow_skip=True):
     """
     Run the full benchmark suite.
 
@@ -244,6 +244,7 @@ def run_benchmark(n_values=None, timeout=None, output_dir=None):
         n_values: list of N values to test (default: DEFAULT_N_VALUES)
         timeout: per-run timeout in seconds (default: DEFAULT_TIMEOUT)
         output_dir: directory for output files (default: current directory)
+        allow_skip: whether to skip solvers exceeding max_n_recommended (default: True)
     """
     if n_values is None:
         n_values = DEFAULT_N_VALUES
@@ -298,7 +299,7 @@ def run_benchmark(n_values=None, timeout=None, output_dir=None):
             run_count += 1
             progress = f"[{run_count}/{total_runs}]"
 
-            if n > max_n:
+            if allow_skip and n > max_n:
                 print(f"  {progress} {name:20s} -> SKIPPED (N > recommended max {max_n})")
                 results.append({
                     "N": n,
@@ -487,6 +488,8 @@ Examples:
                         help="Use large-scale test set (N=32,64,128,256,512,1024,2048,4096)")
     parser.add_argument("--quick", action="store_true",
                         help="Quick test with small N values (4,8,16,32)")
+    parser.add_argument("--no-skip", action="store_true",
+                        help="Force all solvers to run even if N exceeds recommended maximum")
     return parser.parse_args()
 
 
@@ -508,4 +511,5 @@ if __name__ == "__main__":
         n_values=n_values,
         timeout=args.timeout,
         output_dir=args.output_dir,
+        allow_skip=not args.no_skip,
     )
