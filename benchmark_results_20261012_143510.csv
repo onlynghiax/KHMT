@@ -1,0 +1,25 @@
+N,Solver,Category,Time_s,Status,Valid
+4,SAT-Binomial,SAT,0.024882,OK,True
+4,SAT-Binary,SAT,0.02254,OK,True
+4,SAT-Sequential,SAT,0.022741,OK,True
+4,CPLEX-CP,Solver,0.65075,OK,True
+4,CPLEX-MIP,Solver,0.701843,OK,True
+4,CP-SAT,Solver,0.611279,OK,True
+8,SAT-Binomial,SAT,0.019975,OK,True
+8,SAT-Binary,SAT,0.020131,OK,True
+8,SAT-Sequential,SAT,0.018433,OK,True
+8,CPLEX-CP,Solver,0.596262,OK,True
+8,CPLEX-MIP,Solver,0.626867,OK,True
+8,CP-SAT,Solver,0.538842,OK,True
+16,SAT-Binomial,SAT,0.029542,OK,True
+16,SAT-Binary,SAT,0.041606,OK,True
+16,SAT-Sequential,SAT,0.028719,OK,True
+16,CPLEX-CP,Solver,0.60278,OK,True
+16,CPLEX-MIP,Solver,0.760827,OK,True
+16,CP-SAT,Solver,0.536093,OK,True
+32,SAT-Binomial,SAT,0.055763,OK,True
+32,SAT-Binary,SAT,0.271159,OK,True
+32,SAT-Sequential,SAT,0.155335,OK,True
+32,CPLEX-CP,Solver,0.599554,OK,True
+32,CPLEX-MIP,Solver,,"ERROR: **** Promotional version. Problem size limits (1000 vars, 1000 consts) exceeded, model has 1024 vars, 190 consts, CPLEX code=1016",False
+32,CP-SAT,Solver,0.583767,OK,True

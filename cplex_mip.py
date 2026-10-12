@@ -41,7 +41,11 @@ def solve_n_queens(n, timeout=300):
         mdl.parameters.timelimit = timeout
         
     # Solve the model, suppressing the log output
-    solution = mdl.solve(log_output=False)
+    try:
+        solution = mdl.solve(log_output=False)
+    except Exception as e:
+        print(f"CPLEX MIP solve error: {e}")
+        return None
     
     if solution:
         board = [[0] * n for _ in range(n)]

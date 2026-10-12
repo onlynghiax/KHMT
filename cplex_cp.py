@@ -1,6 +1,32 @@
 """
 N-Queens solver using IBM CPLEX CP Optimizer (docplex.cp).
 """
+import os
+import glob
+
+
+def _find_cpoptimizer():
+    """Auto-detect cpoptimizer.exe and add CPLEX bin dirs to PATH."""
+    base_patterns = [
+        r"C:\Program Files\IBM\ILOG\CPLEX_Studio*",
+        r"C:\Program Files (x86)\IBM\ILOG\CPLEX_Studio*",
+    ]
+    for pattern in base_patterns:
+        matches = sorted(glob.glob(pattern), reverse=True)  # newest first
+        for studio_dir in matches:
+            cpopt_exe = os.path.join(studio_dir, "cpoptimizer", "bin", "x64_win64", "cpoptimizer.exe")
+            if os.path.isfile(cpopt_exe):
+                # Also add CPLEX bin dir to PATH so cpoptimizer can find cplex DLL
+                cplex_bin = os.path.join(studio_dir, "cplex", "bin", "x64_win64")
+                cpopt_bin = os.path.join(studio_dir, "cpoptimizer", "bin", "x64_win64")
+                current_path = os.environ.get("PATH", "")
+                for d in [cplex_bin, cpopt_bin]:
+                    if os.path.isdir(d) and d not in current_path:
+                        os.environ["PATH"] = d + os.pathsep + current_path
+                        current_path = os.environ["PATH"]
+                return cpopt_exe
+    return None
+
 
 def solve_n_queens(n, timeout=300):
     """
@@ -33,9 +59,18 @@ def solve_n_queens(n, timeout=300):
     # No two queens on the same anti-diagonal
     model.add(model.all_diff([queens[i] - i for i in range(n)]))
     
+    # Auto-detect and configure cpoptimizer executable path
+    cpopt_exe = _find_cpoptimizer()
+    solve_kwargs = dict(TimeLimit=timeout, LogVerbosity='Quiet')
+    if cpopt_exe:
+        solve_kwargs['execfile'] = cpopt_exe
+    
     # Solve the model
-    # LogVerbosity='Quiet' suppresses verbose output
-    result = model.solve(TimeLimit=timeout, LogVerbosity='Quiet')
+    try:
+        result = model.solve(**solve_kwargs)
+    except Exception as e:
+        print(f"CPLEX CP solve error: {e}")
+        return None
     
     if result and result.is_solution():
         board = [[0] * n for _ in range(n)]
