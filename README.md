@@ -40,23 +40,31 @@ pip install matplotlib
 
 ## Sử dụng Benchmark
 
+Script chính là `benchmark_v2.py` (mỗi lần chạy nằm trong một process riêng, có timeout).
+
 ```bash
-# Chạy nhanh (N = 4, 8, 16, 32)
-python benchmark.py --quick
+pip install psutil          # để đo bộ nhớ
 
-# Chạy mặc định (N = 4..2048)
-python benchmark.py
+# Chạy nhanh (N = 8, 16, 32; 2 lần lặp; timeout 20 s)
+python benchmark_v2.py --quick
 
-# Chạy large-scale (N = 32..4096)
-python benchmark.py --large --timeout 300
+# Cấu hình dùng trong báo cáo: 12 giá trị N, 5 lần lặp, timeout 120 s,
+# mỗi solver chạy với 1 thread và với số thread tự động (0)
+python benchmark_v2.py --timeout 120 --repeats 5 --threads 1 0
 
 # Tùy chỉnh
-python benchmark.py --n 32 64 128 256 512 1024 --timeout 120
+python benchmark_v2.py --n 100 200 500 --solvers SAT-Binary CPLEX-CP --repeats 5 --timeout 300
 ```
 
+Tuỳ chọn chính: `--n`, `--solvers` (SAT-Binomial, SAT-Binary, SAT-Sequential, CPLEX-CP, CPLEX-MIP, Gurobi-MIP, CP-SAT), `--timeout`, `--repeats`, `--threads`, `--randomize-phases`, `--quick`, `--output-dir`.
+
 ### Kết quả đầu ra
-- **CSV**: `benchmark_results_YYYYMMDD_HHMMSS.csv`
-- **Biểu đồ**: `benchmark_plot_YYYYMMDD_HHMMSS.png` (log-scale)
+- `benchmark_v2_runs_<thời gian>.csv`: mỗi dòng là một lần chạy (Import_s, Build_s, Solve_s, Total_s, PeakMB, Conflicts, Decisions, ...)
+- `benchmark_v2_summary_<thời gian>.csv`: median / mean / std / min / max cho từng (N, solver, số thread)
+- `benchmark_v2_plot_<thời gian>.png`: biểu đồ thời gian trung vị (log-log)
+- `benchmark_v2_env_<thời gian>.json`: thông tin máy và phiên bản thư viện
+
+Kết quả dùng trong báo cáo: `benchmark_v2_*_20261015_131718.*`.
 
 ## Chạy từng solver riêng lẻ
 

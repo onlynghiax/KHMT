@@ -1,0 +1,14 @@
+{
+  "platform": "Windows-11-10.0.22621-SP0",
+  "python": "3.12.3",
+  "machine": "AMD64",
+  "processor": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel",
+  "cpu_count": 12,
+  "ram_gb": 7.63,
+  "python-sat": "1.9.dev15",
+  "gurobipy": "13.0.3",
+  "docplex": "2.32.264",
+  "cplex": "22.2.0.1",
+  "ortools": "9.15.6755",
+  "psutil": "5.9.8"
+}
